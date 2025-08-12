@@ -1,0 +1,4 @@
+yfinance
+numpy<2
+scipy
+fastapi[standard]

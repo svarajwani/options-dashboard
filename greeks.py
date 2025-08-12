@@ -1,5 +1,6 @@
-import numpy as np
+import numpy as np, yfinance as yf
 from scipy.stats import norm
+from enum import Enum
 
 
 """
@@ -12,7 +13,7 @@ q = continuously compounded dividend yield (% p.a.)
 t = time to expiration (% of year)
 """
 
-def calculateGreeks(S, K, sigma, r, q, t, optionType='call'):
+def calculateGreeks(S: float, K: float, sigma: float, r: float, q: float, t: float, optionType: str = 'call') -> dict:
 
     d1 = (np.log(S/K) + t * (r - q + (sigma**2)/2)) / (sigma * np.sqrt(t))
     d2 = d1 - sigma * np.sqrt(t)
@@ -60,4 +61,17 @@ def calculateGreeks(S, K, sigma, r, q, t, optionType='call'):
         "rho": round(float(rho), 5),
     }
 
-print(calculateGreeks(228.36, 227.50, 0.3491, 0.0393, 0.0044, (4/365.0), 'call'))
+def getOptionsData(ticker, strikePrice, volatility, riskFree, dividendYield, timeToExpiryInDays):
+    
+    underlyingPrice = yf.Ticker(ticker).fast_info["lastPrice"]
+    timeToExpiryPercent = timeToExpiryInDays / 365.0
+
+    greeks = calculateGreeks(underlyingPrice, strikePrice, volatility, riskFree, dividendYield, timeToExpiryPercent)
+
+    return {
+        "underlyingPrice": underlyingPrice,
+        "strikePrice": strikePrice,
+        "greeks": greeks
+    }
+
+print(getOptionsData("AAPL", 230.00, 0.3170, 0.0393, 0.0056, 3))
