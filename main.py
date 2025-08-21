@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from greeks import calculateGreeks
+from calculator import getOptionsData
 
 app = FastAPI()
 
@@ -8,6 +8,6 @@ app = FastAPI()
 async def root():
     return {"message": "Home page"}
 
-@app.get("/greeks")
+@app.get("/options/{ticker}/{strikePrice}/{volatility}/{riskFree}/{dividendYield}/{timeToExpiryInDays}")
 async def greeks():
-    return calculateGreeks(228.36, 227.50, 0.3491, 0.0393, 0.0044, (4/365.0), 'call')
+    return getOptionsData("AAPL", 230.00, 0.3158, 0.0386, 0.0055, 2)
